@@ -1,0 +1,70 @@
+# Implementation Plan: Secure Family Login with Google Identity
+
+This plan adds a secure login layer to the Tabung Tracker using **Google Identity (OIDC)**. Access will be strictly restricted to a whitelist of family emails (You, Wife, Emergency contacts).
+
+> [!IMPORTANT]
+> **Manual Steps Completed:**
+> - [x] Google Cloud Project Created.
+> - [x] OAuth Client ID provided: `310780157680-foa39tk01sdtmchhq1t93vu3av3i28p0.apps.googleusercontent.com`
+> 
+> **Action Required from USER:**
+> 1. Provide the list of **Authorized Emails** (whitelist).
+> 2. Approve this plan to begin execution.
+
+## Proposed Changes
+
+### 1. Configuration & Security (Backend)
+
+We will modify the Google Apps Script to verify every request against Google's token servers.
+
+#### [MODIFY] [Config.gs](file:///c:/Users/azama/M%20Versa/tabung-tracker/gas/Config.gs)
+- Add `AUTHORIZED_EMAILS` array.
+- Add `GOOGLE_CLIENT_ID = '310780157680-foa39tk01sdtmchhq1t93vu3av3i28p0.apps.googleusercontent.com'`.
+
+#### [MODIFY] [Router.gs](file:///c:/Users/azama/M%20Versa/tabung-tracker/gas/Router.gs)
+- **New Function**: `verifyToken(idToken)` - Uses `UrlFetchApp` to call Google's `tokeninfo` endpoint.
+- **Lockdown**: Update `doGet` and `doPost` to call `verifyToken` first. Access is denied unless the token is valid AND the user's email is in the whitelist.
+
+---
+
+### 2. Frontend Authentication Logic
+
+#### [NEW] [auth.js](file:///c:/Users/azama/M%20Versa/tabung-tracker/src/stores/auth.js)
+- Create a Pinia store to track the current user's email, name, profile picture, and `idToken`.
+- Handle login success/logout actions.
+- Persist the session to `localStorage`.
+
+#### [NEW] [Login.vue](file:///c:/Users/azama/M%20Versa/tabung-tracker/src/views/Login.vue)
+- Create a premium-looking login page with the Google Sign-In button.
+- Use a glassmorphism design that matches the rest of the app.
+
+#### [MODIFY] [main.js](file:///c:/Users/azama/M%20Versa/tabung-tracker/src/main.js)
+- Register the `/login` route.
+- Implement a **global Route Guard** (`router.beforeEach`) that redirects unauthenticated users to `/login`.
+
+---
+
+### 3. API Integration
+
+#### [MODIFY] [useApi.js](file:///c:/Users/azama/M%20Versa/tabung-tracker/src/composables/useApi.js)
+- Update `jsonp` and `gasPost` to automatically append `idToken=[TOKEN]` to the request URL.
+- Handle `401 Unauthorized` responses by forcing a logout and redirecting to the login page.
+
+---
+
+### 4. Layout & UI
+
+#### [MODIFY] [App.vue](file:///c:/Users/azama/M%20Versa/tabung-tracker/src/App.vue)
+- Hide the sidebar/navigation if the user is on the Login page.
+- Add a "Logout" button to the sidebar.
+
+## Verification Plan
+
+### Automated Tests
+- No automated tests available for OIDC flow, but I will perform manual verification.
+
+### Manual Verification
+1.  **Unauthorized Access**: Try to open the app (e.g., `/dashboard`) without logging in. Expect redirection to `/login`.
+2.  **Valid Login**: Log in with an authorized email. Expect successful access to all data.
+3.  **Invalid Login**: Log in with a Google account NOT in the whitelist. Expect an "Unauthorized" error message.
+4.  **Token Expiry**: Ensure the app detects when a session expires and requires re-login.

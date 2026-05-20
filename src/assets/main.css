@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+}
+
+@layer components {
+  .card {
+    @apply bg-bg-surface border border-border rounded-lg p-5;
+  }
+  .card-sm {
+    @apply bg-bg-surface2 border border-border rounded-lg p-4;
+  }
+  .stat-card {
+    @apply bg-bg-surface border border-border rounded-lg p-4;
+  }
+  .btn-primary {
+    @apply bg-accent text-bg font-medium text-sm px-4 py-2 rounded-lg
+           hover:bg-accent-hover transition-colors duration-150 cursor-pointer
+           inline-flex items-center gap-1.5;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-ink-muted border border-border-strong text-sm px-4 py-2 rounded-lg
+           hover:text-ink hover:bg-white/5 transition-colors duration-150 cursor-pointer
+           inline-flex items-center gap-1.5;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium;
+  }
+  .section-label {
+    @apply text-[10px] font-semibold uppercase tracking-widest text-ink-muted mb-3;
+  }
+  .input-field {
+    @apply w-full bg-bg-surface3 border border-border-strong rounded-lg px-3 py-2
+           text-ink text-sm focus:outline-none focus:border-accent/50 transition-colors;
+  }
+  .select-field {
+    @apply w-full bg-bg-surface3 border border-border-strong rounded-lg px-3 py-2
+           text-ink text-sm focus:outline-none focus:border-accent/50 transition-colors cursor-pointer;
+  }
+  .table-base {
+    @apply w-full text-sm border-collapse;
+  }
+  .table-base thead th {
+    @apply text-left text-[10px] font-semibold uppercase tracking-wider text-ink-muted
+           px-3 py-2.5 border-b border-border;
+  }
+  .table-base tbody tr {
+    @apply border-b border-border hover:bg-white/[0.02] transition-colors;
+  }
+  .table-base tbody td {
+    @apply px-3 py-2.5 text-ink;
+  }
+  .amount-pos { @apply font-mono text-status-success; }
+  .amount-neg { @apply font-mono text-status-danger; }
+  .amount-neu { @apply font-mono text-ink; }
+  .badge-green { @apply bg-status-success/10 text-status-success; }
+  .badge-red { @apply bg-status-danger/10 text-status-danger; }
+  .badge-yellow { @apply bg-accent-gold/10 text-accent-gold; }
+  .badge-blue { @apply bg-accent-blue/10 text-accent-blue; }
+  .badge-pink { @apply bg-accent-pink/10 text-accent-pink; }
+  .badge-gray { @apply bg-white/5 text-ink-muted; }
+  .badge-accent { @apply bg-accent/10 text-accent; }
+}
