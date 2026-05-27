@@ -742,22 +742,31 @@ const totalRollover = computed(() =>
 // ── Close modal decisions ─────────────────────────────────────────────────
 const closeDecisions = ref([])
 
+// In SalaryCycle.vue — Update this watch block:
 watch(showCloseModal, (open) => {
   if (!open) return
   closeError.value = ''
-  closeDecisions.value = salStore.cycleBudgetsWithSpent.map(b => ({
-    budgetId:  b.id,
-    templateId:b.templateId,
-    name:      b.name,
-    category:  b.category,
-    color:     b.color,
-    planned:   b.planned,
-    spent:     b.spent,
-    leftover:  b.remaining,
-    sourceId:  b.sourceId,
-    action:    b.remaining > 0 ? 'keep' : 'none',
-    destId:    '',
-  }))
+  
+  //  FIX: Map from activeCycleBudgets to loop over real, individual envelopes
+  closeDecisions.value = salStore.activeCycleBudgets.map(b => {
+    // Calculate spent and remaining values per envelope right here
+    const spent = txStore.getSpentForEnvelope(appStore.currentCycle.id, b.templateId ?? b.id)
+    const leftover = Math.round(b.planned - spent)
+
+    return {
+      budgetId:  b.id,          //  Now correctly references 'BUD_2026-04-25_env-free', etc.
+      templateId:b.templateId,
+      name:      b.name,
+      category:  b.category,
+      color:     salStore.categoryColor(b.category),
+      planned:   b.planned,
+      spent:     spent,
+      leftover:  leftover,
+      sourceId:  b.sourceId,
+      action:    leftover > 0 ? 'keep' : 'none',
+      destId:    '',
+    }
+  })
 })
 
 const sweepCount       = computed(() => closeDecisions.value.filter(r => r.action === 'sweep' && r.leftover > 0).length)
