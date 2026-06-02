@@ -66,7 +66,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="tx in filtered" :key="tx.id">
+            <tr v-for="tx in paginatedFiltered" :key="tx.id">
               <td class="text-ink-muted text-xs whitespace-nowrap">{{ formatDate(tx.date) }}</td>
               <td class="max-w-[200px]"><span class="truncate block">{{ tx.description }}</span></td>
               <td><span class="badge text-[11px]" :class="categoryBadge(tx.category)">{{ tx.category }}</span></td>
@@ -100,6 +100,26 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Pagination Controls -->
+        <div v-if="totalPages > 1" class="flex items-center justify-between p-4 border-t border-border bg-bg-surface2">
+          <div class="text-xs text-ink-muted">
+            Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, filtered.length) }} of {{ filtered.length }} entries
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="btn-ghost text-xs px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="currentPage === 1"
+                    @click="currentPage--">
+              Previous
+            </button>
+            <span class="text-xs text-ink font-medium mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
+            <button class="btn-ghost text-xs px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="currentPage === totalPages"
+                    @click="currentPage++">
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -108,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted }  from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAppStore }               from '@/stores/app'
 import { useAccountStore }           from '@/stores/accounts'
 import { useTransactionStore }       from '@/stores/transactions'
@@ -131,6 +151,13 @@ const filterAccount  = ref('')
 const filterCycle    = ref('')
 const categories = ['Income','Transfer','Bills','Shopping','Transport','Food','IPO','Personal','Family','Business','Tax','Savings']
 
+const currentPage = ref(1)
+const itemsPerPage = 100
+
+watch([filterCategory, filterAccount, filterCycle], () => {
+  currentPage.value = 1
+})
+
 const cycles = computed(() =>
   [...new Set(txStore.transactions.map(t => t.cycleId))].sort().reverse()
 )
@@ -142,6 +169,13 @@ const filtered = computed(() => {
   if (filterCycle.value)    txs = txs.filter(t => t.cycleId === filterCycle.value)
   return txs
 })
+
+const paginatedFiltered = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return filtered.value.slice(start, start + itemsPerPage)
+})
+
+const totalPages = computed(() => Math.ceil(filtered.value.length / itemsPerPage) || 1)
 
 const totalTransfers = computed(() =>
   txStore.transactions.filter(t => t.category === 'Transfer').reduce((s, t) => s + Math.abs(t.amount), 0)

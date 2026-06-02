@@ -2,14 +2,35 @@
 
 Personal finance management app built with **Vue 3 + Pinia + Vue Router + Tailwind CSS**, backed by **Google Apps Script + Google Sheets**.
 
-## Quick Start
+## Quick Start & Deployment
 
-```bash
-npm install
-npm run dev
-```
+### Run Locally
 
-Open [http://localhost:5173](http://localhost:5173)
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+3. Open [http://localhost:5173](http://localhost:5173)
+
+### Cloud Deployment (Frontend)
+
+This app is a static Single Page Application (SPA) built with Vite, meaning it can be hosted natively on any static site hosting service or frontend cloud engine.
+
+Before deploying, ensure your Google Apps Script backend is set up and add your `VITE_GAS_URL` as an environment variable in your hosting platform.
+
+**GitHub Pages:**
+You can deploy the `dist/` folder to a `gh-pages` branch. If deploying to a repository subpath (e.g., `https://username.github.io/tabung-tracker/`), ensure you update the `base` path in `vite.config.js`.
+
+**Vercel / Netlify / Cloudflare Pages:**
+1. Import your Git repository to the platform.
+2. Build command: `npm run build`
+3. Publish/Output directory: `dist`
+4. Add `VITE_GAS_URL` to the project's Environment Variables.
+5. Deploy!
 
 ---
 

@@ -96,7 +96,29 @@ function closeCycle({ cycle_id, close_date, decisions }) {
   }
 
   const sheet   = getSheet(SHEETS.CYCLE_BUDGETS)
-  const budgets = sheetToObjects(sheet).filter(r => r.cycle_id === cycle_id)
+  //const budgets = sheetToObjects(sheet).filter(r => r.cycle_id === cycle_id)
+const budgets = sheetToObjects(sheet).filter(r => {
+  if (!r || !r.cycle_id) return false;
+
+  let sheetCycleId;
+
+  // If it's a Date Object, convert it to 'YYYY-MM-DD' string format
+  if (r.cycle_id instanceof Date) {
+    const year  = r.cycle_id.getFullYear();
+    // Months are 0-indexed in JS, so we add 1, and pad with a leading zero if needed
+    const month = String(r.cycle_id.getMonth() + 1).padStart(2, '0');
+    const day   = String(r.cycle_id.getDate()).padStart(2, '0');
+    
+    sheetCycleId = `${year}-${month}-${day}`;
+  } else {
+    // If it's already a string, just clean up any accidental spaces
+    sheetCycleId = String(r.cycle_id).trim();
+  }
+
+  // Now we are comparing string to string safely!
+  return sheetCycleId === cycle_id.trim();
+});
+
 
   if (!budgets.length) throw new Error(`No budgets found for cycle "${cycle_id}"`)
   if (budgets[0].is_locked === true) throw new Error(`Cycle "${cycle_id}" is already closed`)
@@ -107,6 +129,7 @@ function closeCycle({ cycle_id, close_date, decisions }) {
 
   // ── Step 1: Apply rollover decisions ──────────────────────────────────
   for (const decision of decisions) {
+
     const budget = budgets.find(b => b.budget_id === decision.budget_id)
     if (!budget) continue
 
@@ -120,7 +143,8 @@ function closeCycle({ cycle_id, close_date, decisions }) {
         date:                   close_date,
         cycle_id,
         description:            `Rollover: ${budget.envelope_name} → sweep`,
-        category:               'Transfer',
+        category:               budget.category || 'Transfer',
+        envelope_id:            budget.template_id,
         amount:                 amount,
         source_account_id:      budget.source_account_id,
         destination_account_id: decision.rollover_dest_id,

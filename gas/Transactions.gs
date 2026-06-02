@@ -79,13 +79,13 @@ function addTransaction(data) {
   if (data.source_account_id) {
     // Transfers, Loans, and Repayments always deduct from the source account.
     // Expenses (-) also deduct, while Income (+) adds.
-    const isTransferLike = ['Transfer', 'Loan', 'Repayment'].includes(data.category);
+    // If destination_account_id is present alongside source, it's definitely a transfer out.
+    const isTransferLike = ['Transfer', 'Loan', 'Repayment'].includes(data.category) || !!data.destination_account_id;
     const delta = isTransferLike ? -Math.abs(data.amount) : Number(data.amount);
     adjustAccountBalance(data.source_account_id, delta);
   }
   if (data.destination_account_id) {
-    // Destination always gains the amount (Transfers, Loans, Repayments, Refunds).
-    // We use Math.abs to ensure the destination always receives a positive inflow.
+    // Destination always gains the amount (Transfers, Refunds)
     adjustAccountBalance(data.destination_account_id, Math.abs(data.amount));
   }
 

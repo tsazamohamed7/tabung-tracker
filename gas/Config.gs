@@ -3,7 +3,7 @@
 // ║  All other .gs files read from this file.           ║
 // ╚══════════════════════════════════════════════════════╝
 
-const SHEET_ID = '[OUR_SHEET_ID]'
+const SHEET_ID = '[YOUR_SHEET_ID]'
 
 const SHEETS = {
   APP_SETTINGS:  'app_settings',
