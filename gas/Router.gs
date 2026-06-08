@@ -88,6 +88,7 @@ function handleRead(resource) {
     case 'bursa_trades':   return getBursaTrades()
     case 'cc_bridge':      return getCcBridge()
     case 'wishlist':       return getWishlist()
+    case 'house_fund':     return getHouseFundTrx()
     default:
       throw new Error(`Unknown read resource: "${resource}"`)
   }
@@ -111,6 +112,8 @@ function handleWrite(resource, body) {
     case 'wishlist':       return upsertWishlist(body)
     case 'start_cycle':    return startNewCycle(body)
     case 'close_cycle':    return closeCycle(body)
+    case 'house_fund_add': return upsertHouseFundTrx(body)
+    case 'house_fund_del': return deleteHouseFundTrx(body)
     default:
       throw new Error(`Unknown write resource: "${resource}"`)
   }

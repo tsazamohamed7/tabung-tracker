@@ -33,6 +33,7 @@ const routes = [
   { path: '/cc', component: CCBridge, meta: { label: 'CC Bridge' } },
   { path: '/ipo', component: IpoTracker, meta: { label: 'IPO Tracker' } },
   { path: '/bursa', component: () => import('./views/BursaTracker.vue'), meta: { label: 'Bursa Tracker' } },
+  { path: '/house-fund', component: () => import('./views/HouseFund.vue'), meta: { label: 'House Fund' } },
   { path: '/partner', component: PartnerView, meta: { label: 'Partner View' } },
   { path: '/recon', component: Reconciliation, meta: { label: 'Reconciliation' } },
 ]

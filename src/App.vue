@@ -103,6 +103,7 @@ const navGroups = [
       { path: '/cc',  label: 'CC Bridge',   icon: '▣' },
       { path: '/ipo', label: 'IPO Tracker', icon: '▲' },
       { path: '/bursa', label: 'Bursa Equities', icon: '◭' },
+      { path: '/house-fund', label: 'House Fund', icon: '⌂' },
     ]
   },
   {

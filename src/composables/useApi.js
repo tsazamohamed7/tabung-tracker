@@ -198,6 +198,17 @@ function mapWishlist(row) {
   }
 }
 
+function mapHouseFund(row) {
+  return {
+    id:          row.trx_id,
+    date:        formatGasDate(row.date),
+    type:        row.type,
+    funder:      row.funder,
+    amount:      Number(row.amount) || 0,
+    description: row.description,
+  }
+}
+
 function mapCycleBudget(row) {
   return {
     id:              row.budget_id,
@@ -226,6 +237,7 @@ export const api = {
   getBursaTrades:   () => jsonp({ resource: 'bursa_trades'   }).then(r => r.map(mapBursa)),
   getCcBridge:      () => jsonp({ resource: 'cc_bridge'      }).then(r => r.map(mapCcBridge)),
   getWishlist:      () => jsonp({ resource: 'wishlist'       }).then(r => r.map(mapWishlist)),
+  getHouseFund:     () => jsonp({ resource: 'house_fund'     }).then(r => r.map(mapHouseFund)),
 
   // ── Writes (POST) ──
   setSetting:       (key, value, note) => gasPost('app_settings', { key, value, note }),
@@ -240,4 +252,6 @@ export const api = {
   updateAccount:    (data) => gasPost('accounts',       data),
   startNewCycle:    (data) => gasPost('start_cycle',    data),
   closeCycle:       (data) => gasPost('close_cycle',    data),
+  upsertHouseFund:  (data) => gasPost('house_fund_add', data),
+  deleteHouseFund:  (data) => gasPost('house_fund_del', data),
 }
