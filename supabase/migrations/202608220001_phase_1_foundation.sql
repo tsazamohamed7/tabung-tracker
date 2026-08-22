@@ -246,15 +246,15 @@ create index cc_bridges_transaction_idx on public.cc_bridges(owner_id, transacti
 create index cc_bridges_funding_idx on public.cc_bridges(owner_id, funding_source_account_id);
 create index accounts_owner_active_idx on public.accounts(owner_id) where is_active;
 
-do $$ declare t text; begin
-  foreach t in array array['profiles','app_settings','accounts','salary_plans','salary_cycles','cycle_budgets','transactions','cc_bridges','ipo_tracker','bursa_trades','wishlist','house_fund'] loop
+alter table public.profiles enable row level security;
+create policy profiles_self on public.profiles for all to authenticated using (id = auth.uid()) with check (id = auth.uid());
+
+do $ declare t text; begin
+  foreach t in array array['app_settings','accounts','salary_plans','salary_cycles','cycle_budgets','transactions','cc_bridges','ipo_tracker','bursa_trades','wishlist','house_fund'] loop
     execute format('alter table public.%I enable row level security', t);
-    execute format('create policy %I on public.%I for all to authenticated using (id = auth.uid()) with check (id = auth.uid())', t||'_self', t) where t = 'profiles';
-    if t <> 'profiles' then
-      execute format('create policy %I on public.%I for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid())', t||'_owner', t);
-    end if;
+    execute format('create policy %I on public.%I for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid())', t||'_owner', t);
   end loop;
-end $$;
+end $;
 
 grant usage on schema public to authenticated;
 grant select, insert, update, delete on all tables in schema public to authenticated;
