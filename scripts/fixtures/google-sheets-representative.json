@@ -1,0 +1,62 @@
+{
+  "dim_accounts": [
+    {
+      "account_id": "ACC001",
+      "initial_balance": "1000.00",
+      "balance": "1000.00",
+      "is_active": "TRUE"
+    },
+    {
+      "account_id": "ACC002",
+      "initial_balance": "0",
+      "balance": "0",
+      "is_active": true
+    }
+  ],
+  "dim_salary_plans": [
+    {
+      "template_id": "SAL001",
+      "planned_amount": "500.00",
+      "default_source_id": "ACC001"
+    }
+  ],
+  "fact_cycle_budgets": [
+    {
+      "budget_id": "BUD001",
+      "cycle_id": "2025-06",
+      "template_id": "SAL001"
+    }
+  ],
+  "fact_transactions": [
+    {
+      "transaction_id": "T001",
+      "date": "2025-06-01",
+      "cycle_id": "2025-06",
+      "amount": "1200.00",
+      "source_account_id": "ACC001",
+      "is_cc_transaction": false
+    },
+    {
+      "transaction_id": "T002",
+      "date": "2025-06-02",
+      "cycle_id": "2025-06",
+      "amount": "-50.00",
+      "source_account_id": "ACC001",
+      "envelope_id": "SAL001",
+      "is_cc_transaction": "FALSE"
+    }
+  ],
+  "fact_cc_bridge": [
+    {
+      "bridge_id": "BRG001",
+      "transaction_id": "T002",
+      "funding_source_id": "ACC001",
+      "amount": "50.00"
+    }
+  ],
+  "fact_ipo_tracker": [],
+  "fact_bursa_tracker": [],
+  "dim_wishlist": [],
+  "fact_house_fund": [],
+  "app_settings": []
+}
