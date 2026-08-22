@@ -156,9 +156,10 @@ create table public.cc_bridges (
   unique (transaction_id),
   foreign key (transaction_id, owner_id) references public.transactions(id, owner_id) on delete restrict,
   foreign key (funding_source_account_id, owner_id) references public.accounts(id, owner_id) on delete restrict,
-  check ((status = 'unassigned' and funding_source_account_id is null and settlement_date is null)
-      or (status = 'assigned' and funding_source_account_id is not null and settlement_date is null)
-      or (status = 'settled' and funding_source_account_id is not null and settlement_date is not null))
+  -- V1 has legacy bridge rows whose funding source/status combinations are inconsistent.
+  -- Keep the minimum invariant now; stricter workflow transitions are a later phase.
+  check (settlement_date is null or status = 'settled'),
+  check (status <> 'settled' or funding_source_account_id is not null)
 );
 
 create table public.ipo_tracker (
